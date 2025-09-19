@@ -24,7 +24,7 @@
 class Solution {
 public:
     
-    void bfsMove(struct TreeNode *root, int cur_step, int &max_step, vector<int> &res) {
+    void dfsMove(struct TreeNode *root, int cur_step, int &max_step, vector<int> &res) {
 
 		if (!root)
 			return;
@@ -37,8 +37,8 @@ public:
 		
 		if (cur_step > max_step) max_step = cur_step;
 
-		bfsMove(root->right, cur_step, max_step, res);
-		bfsMove(root->left, cur_step, max_step, res);
+		dfsMove(root->right, cur_step, max_step, res);
+		dfsMove(root->left, cur_step, max_step, res);
 	}
     
     vector<int> rightSideView(TreeNode *root) {
@@ -49,7 +49,7 @@ public:
             return res;
 		
         int max_step = 0;
-        bfsMove(root, 0, max_step, res);
+        dfsMove(root, 0, max_step, res);
         
 		return res;
     }
