@@ -12,7 +12,8 @@ typedef struct {
 } MyCalendar;
 
 
-struct Interval* createInterval(int start, int end) {
+static struct Interval* createInterval(int start, int end) 
+{
 	
 	struct Interval* interval = (struct Interval *) malloc(sizeof(struct Interval));
 	if (interval == NULL)
@@ -26,7 +27,8 @@ struct Interval* createInterval(int start, int end) {
 }
 
 
-bool addIntervalNextTo(struct Interval *cur_interval, struct Interval *new_interval) {
+static bool addIntervalNextTo(struct Interval *cur_interval, struct Interval *new_interval) 
+{
 	
 	if (!cur_interval->next) {
 		cur_interval->next = new_interval;
@@ -40,10 +42,11 @@ bool addIntervalNextTo(struct Interval *cur_interval, struct Interval *new_inter
 	return true;	
 }
 
-struct Interval* findPlace(struct Interval *intervals, int startTime, int endTime) {
+struct Interval* findPlace(struct Interval *intervals, int start_time, int end_time) 
+{
 	struct Interval* cur_node = intervals;
 	while (cur_node) {
-		if (cur_node->end_time <= startTime && !cur_node->next || cur_node->next && cur_node->next->start_time >= endTime) {
+		if (cur_node->end_time <= start_time && !cur_node->next || cur_node->next && cur_node->next->start_time >= end_time) {
 			return cur_node;
 		}
 		cur_node = cur_node->next;
@@ -52,28 +55,25 @@ struct Interval* findPlace(struct Interval *intervals, int startTime, int endTim
 }
 
 
-MyCalendar* myCalendarCreate() {
+MyCalendar* myCalendarCreate() 
+{
     MyCalendar *calendar_inst = (MyCalendar*) malloc(sizeof(MyCalendar));
     
 	if (calendar_inst == NULL)
 		return NULL;
-	calendar_inst->interval_list = NULL;
+	calendar_inst->interval_list = createInterval(0, 0);
     calendar_inst->size = 0;
 	return calendar_inst;
 }
 
-bool myCalendarBook(MyCalendar* obj, int startTime, int endTime) {
+bool myCalendarBook(MyCalendar *obj, int start_time, int end_time) 
+{
     if (!obj) return false;
-    if (!obj->interval_list) {
-		struct Interval *new_interval = createInterval(startTime, endTime);
-		obj->interval_list = new_interval;
-		obj->size++;
-		return true;
-	}
+
 	
-	struct Interval *next_to = findPlace(obj->interval_list, startTime, endTime);
+	struct Interval *next_to = findPlace(obj->interval_list, start_time, end_time);
 	if (next_to) {
-		struct Interval *new_interval = createInterval(startTime, endTime);
+		struct Interval *new_interval = createInterval(start_time, end_time);
 		addIntervalNextTo(next_to, new_interval);
         obj->size++;
 		return true;
@@ -82,14 +82,15 @@ bool myCalendarBook(MyCalendar* obj, int startTime, int endTime) {
 	
 }
 
-void myCalendarFree(MyCalendar* obj) {
-    
+void myCalendarFree(MyCalendar* obj) 
+{
+    struct Interval *cur_node = obj->interval_list;
+    struct Interval *temp = NULL;
+    while (cur_node) 
+    {
+        temp = cur_node;
+        cur_node = cur_node->next;
+        free(temp);
+    }
+    free(obj);
 }
-
-/**
- * Your MyCalendar struct will be instantiated and called as such:
- * MyCalendar* obj = myCalendarCreate();
- * bool param_1 = myCalendarBook(obj, startTime, endTime);
- 
- * myCalendarFree(obj);
-*/
