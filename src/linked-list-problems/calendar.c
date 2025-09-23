@@ -1,10 +1,21 @@
+/*
+You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a double booking.
+A double booking happens when two events have some non-empty intersection (i.e., some moment is common to both events.).
+The event can be represented as a pair of integers startTime and endTime that represents a booking on the half-open interval 
+[startTime, endTime), the range of real numbers x such that startTime <= x < endTime.
+
+Implement the MyCalendar class:
+MyCalendar() Initializes the calendar object.
+boolean book(int startTime, int endTime) Returns true if the event can be added to the calendar successfully without causing a double booking. 
+Otherwise, return false and do not add the event to the calendar.
+*/
+
 struct Interval {
     int start_time;
     int end_time;
     struct Interval *next;
     struct Interval *prev;
-} Interval;
-
+};
 
 typedef struct {
 	struct Interval* interval_list;
@@ -18,7 +29,7 @@ static struct Interval* createInterval(int start, int end)
 	struct Interval* interval = (struct Interval *) malloc(sizeof(struct Interval));
 	if (interval == NULL)
 		return NULL;
-	
+
 	interval->start_time = start;
 	interval->end_time = end;
     interval->next = NULL;
@@ -26,10 +37,8 @@ static struct Interval* createInterval(int start, int end)
 	return interval;
 }
 
-
 static bool addIntervalNextTo(struct Interval *cur_interval, struct Interval *new_interval) 
 {
-	
 	if (!cur_interval->next) {
 		cur_interval->next = new_interval;
 		new_interval->prev = cur_interval;
@@ -42,16 +51,17 @@ static bool addIntervalNextTo(struct Interval *cur_interval, struct Interval *ne
 	return true;	
 }
 
-struct Interval* findPlace(struct Interval *intervals, int start_time, int end_time) 
+static struct Interval* findPlace(struct Interval *intervals, int start_time, int end_time) 
 {
 	struct Interval* cur_node = intervals;
 	while (cur_node) {
-		if (cur_node->end_time <= start_time && !cur_node->next || cur_node->next && cur_node->next->start_time >= end_time) {
+		if (cur_node->end_time <= start_time && !cur_node->next
+            || cur_node->end_time <= start_time &&  cur_node->next && cur_node->next->start_time >= end_time) {
 			return cur_node;
 		}
 		cur_node = cur_node->next;
 	}
-	return cur_node;
+	return NULL;
 }
 
 
@@ -70,7 +80,6 @@ bool myCalendarBook(MyCalendar *obj, int start_time, int end_time)
 {
     if (!obj) return false;
 
-	
 	struct Interval *next_to = findPlace(obj->interval_list, start_time, end_time);
 	if (next_to) {
 		struct Interval *new_interval = createInterval(start_time, end_time);
@@ -79,7 +88,6 @@ bool myCalendarBook(MyCalendar *obj, int start_time, int end_time)
 		return true;
 	} else 
 		return false;
-	
 }
 
 void myCalendarFree(MyCalendar* obj) 
