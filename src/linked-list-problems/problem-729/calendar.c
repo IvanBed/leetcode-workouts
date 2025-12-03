@@ -18,7 +18,7 @@ struct Interval {
 };
 
 typedef struct {
-	struct Interval* interval_list;
+	struct Interval *interval_list;
 	int size;  
 } MyCalendar;
 
@@ -26,7 +26,7 @@ typedef struct {
 static struct Interval* createInterval(int start, int end) 
 {
 	
-    struct Interval* interval = (struct Interval *) malloc(sizeof(struct Interval));
+    struct Interval *interval = (struct Interval *) malloc(sizeof(struct Interval));
     if (interval == NULL)
         return NULL;
 
@@ -53,7 +53,7 @@ static bool addIntervalNextTo(struct Interval *cur_interval, struct Interval *ne
 
 static struct Interval* findPlace(struct Interval *intervals, int start_time, int end_time) 
 {
-	struct Interval* cur_node = intervals;
+	struct Interval *cur_node = intervals;
 	while (cur_node) {
 		if (cur_node->end_time <= start_time && !cur_node->next
             || cur_node->end_time <= start_time &&  cur_node->next && cur_node->next->start_time >= end_time) {
