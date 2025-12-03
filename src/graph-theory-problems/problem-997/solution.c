@@ -16,7 +16,7 @@ Return the label of the town judge if the town judge exists and can be identifie
 
 */
 
-int findJudge(int n, int** trust, int trustSize, int* trustColSize) 
+int findJudge(int n, int **trust, int trustSize, in t*trustColSize) 
 {
     int people[n + 1];
     memset(people, 0, (n + 1) * sizeof(int));
