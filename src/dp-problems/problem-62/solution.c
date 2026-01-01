@@ -10,8 +10,7 @@ The test cases are generated so that the answer will be less than or equal to 2 
 */
 
 void fill(int **arr, int m, int n)
-{
-    
+{    
     for (size_t i = 0; i < n; i++)
     {
         arr[0][i] = 1;    
