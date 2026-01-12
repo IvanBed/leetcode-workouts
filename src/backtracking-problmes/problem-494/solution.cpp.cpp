@@ -30,36 +30,43 @@ public:
     }
 };
 
-class Solution2 {
+// Map mem solution	
+class Solution {
 private: 
-    void insert(map<int64_t, size_t> & map, int64_t val)
+    void insert(map<int64_t, size_t> & map, int64_t val, size_t prev_cnt)
     {
-        if (auto search = map.find(map[val]); search == map.end())
-            map[val] = 1;
-        else
-            map[val]++;
+        map[val] =  map[val] + prev_cnt;
     } 
-	
+    
 public:    
     int findTargetSumWays(vector<int>& nums, int target) 
-	{
+    {
         map<int64_t, size_t> dp_map;
-        dp_map[nums[0]] = 1;
-        dp_map[-nums[0]] = 1;
+        if (nums[0] == -nums[0])
+        {
+            dp_map[nums[0]] = 2;
+        }
+        else 
+        {
+            dp_map[nums[0]] = 1;
+            dp_map[-nums[0]] = 1;
+        }
+
         for (size_t i = 1; i < nums.size(); i++)
         {
             map<int64_t, size_t> cur_dp_map;
             for (auto const& [key, val] : dp_map)
             {
-                insert(cur_dp_map, key + nums[i]);
-                insert(cur_dp_map, key - nums[i]);
+
+                insert(cur_dp_map, key + nums[i], val);
+                insert(cur_dp_map, key - nums[i], val);
             }
             dp_map = cur_dp_map;
-
         }
+
         if (auto search = dp_map.find(target); search == dp_map.end())
-            return false;
+            return 0;
         else
-            return true;    
+            return dp_map[target];    
     }
 };
