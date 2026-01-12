@@ -10,26 +10,26 @@ Return the number of different expressions that you can build, which evaluates t
 */
 // Backtracking solution	
 class Solution1 {
-private: 
+private:
     void findTargetSums(vector<int> const & nums, int target, int64_t cur_val, size_t index, int64_t & cnt)
     {
-        if (index => nums.size())
+        if (index >= nums.size())
         {
-            cnt = cur_val == target ? cur_val : cnt;
+            cnt = cur_val == target ? cnt + 1 : cnt;
+            return;
         }
         findTargetSums(nums, target, cur_val + nums[index], index + 1, cnt);
-		findTargetSums(nums, target, cur_val - nums[index], index + 1, cnt);
+        findTargetSums(nums, target, cur_val - nums[index], index + 1, cnt);
     }
-	
+    
 public:    
     int findTargetSumWays(vector<int>& nums, int target) 
-	{
+    {
         int64_t res = 0;
-		findTargetSums(nums, target, 0, 0, res);
-		return res;
+        findTargetSums(nums, target, 0, 0, res);
+        return res;
     }
 };
-
 // Map mem solution	
 class Solution {
 private: 
