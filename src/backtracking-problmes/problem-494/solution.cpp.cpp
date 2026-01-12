@@ -16,9 +16,7 @@ private:
         if (index => nums.size())
         {
             cnt = cur_val == target ? cur_val : cnt;
-
         }
-
         findTargetSums(nums, target, cur_val + nums[index], index + 1, cnt);
 		findTargetSums(nums, target, cur_val - nums[index], index + 1, cnt);
     }
@@ -31,7 +29,6 @@ public:
 		return res;
     }
 };
-
 
 class Solution2 {
 private: 
