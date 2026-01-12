@@ -31,9 +31,9 @@ public:
     }
 };
 // Map mem solution	
-class Solution {
+class Solution2 {
 private: 
-    void insert(map<int64_t, size_t> & map, int64_t val, size_t prev_cnt)
+    void insert(unordered_map<int64_t, size_t> & map, int64_t val, size_t prev_cnt)
     {
         map[val] =  map[val] + prev_cnt;
     } 
@@ -41,8 +41,8 @@ private:
 public:    
     int findTargetSumWays(vector<int>& nums, int target) 
     {
-        map<int64_t, size_t> dp_map;
-        if (nums[0] == -nums[0])
+        unordered_map<int64_t, size_t> dp_map;
+        if (nums[0] == 0)
         {
             dp_map[nums[0]] = 2;
         }
@@ -54,10 +54,9 @@ public:
 
         for (size_t i = 1; i < nums.size(); i++)
         {
-            map<int64_t, size_t> cur_dp_map;
+            unordered_map<int64_t, size_t> cur_dp_map;
             for (auto const& [key, val] : dp_map)
             {
-
                 insert(cur_dp_map, key + nums[i], val);
                 insert(cur_dp_map, key - nums[i], val);
             }
