@@ -17,11 +17,12 @@ You must solve the problem without using any built-in functions in O(nlog(n)) ti
 struct arr_struct
 {
 	int *arr;
-	int l;
-	int r;
+	size_t l;
+	size_t r;
 };
 
-struct arr_struct make_arr_struct(int * arr, int l, int r)
+
+struct arr_struct make_arr_struct(int * arr, size_t l, size_t r)
 {
 	struct arr_struct res; 
 	res.arr = arr;
@@ -30,27 +31,27 @@ struct arr_struct make_arr_struct(int * arr, int l, int r)
 	return res;
 }
 
-void unpack_arr_struct(struct arr_struct, int **arr, int *l, int *r)
+void unpack_arr_struct(struct arr_struct inst, int **arr, size_t *l, size_t *r)
 {
-	*arr = arr_struct.arr;
-	*l = arr_struct.l;
-	*r = arr_struct.r;
+    *arr = inst.arr;
+	*l = inst.l;
+	*r = inst.r;
 }
 
-int calculate_mid(int l, int r)
+size_t calculate_mid(size_t l, size_t r)
 {
 	return (r - l) / 2 + l;
 }
 
-void merge(int *arr, int l, int mid, int r) 
+void merge(int *arr, size_t l, size_t mid, size_t r) 
 {    
-    int arr_structize = r - l + 1;
+    size_t arr_size = r - l + 1;
 
-    int temp_arr[arr_structize];
-    memset(temp_arr, 0, sizeof(int) * arr_structize);
-    int i = l;
-    int j = mid + 1;
-    int k = 0;
+    int temp_arr[arr_size];
+    memset(temp_arr, 0, sizeof(int) * arr_size);
+    size_t i = l;
+    size_t j = mid + 1;
+    size_t k = 0;
 
     while (i <= mid && j <= r)
     {
@@ -78,7 +79,7 @@ void merge(int *arr, int l, int mid, int r)
         j++;        
         
     }
-    memcpy(arr + l, temp_arr, (arr_structize)*sizeof(int));
+    memcpy(arr + l, temp_arr, (arr_size)*sizeof(int));
 }
 
 
@@ -89,33 +90,36 @@ void* merge_sort_multithread(void *args)
 		return NULL;
 	}
 	
-	int l, r;
+	size_t l, r;
 	int *arr;
-	unpack_arr_struct((arr_struct)(*args), arr, l, r);
+	unpack_arr_struct(*((struct arr_struct*)args), &arr, &l, &r);
 
 	if (l >= r) 
     {
         return NULL;
     }    
 	
-    int mid = calculate_mid(l, r);
-    merge_sort_multithread(arr, make_arr_struct(l, mid));
-    merge_sort_multithread(arr, make_arr_struct(mid + 1, r));
+    size_t mid = calculate_mid(l, r);
+    
+    struct arr_struct l_part_args = make_arr_struct(arr, l, mid);
+	struct arr_struct r_part_args = make_arr_struct(arr, mid + 1, r);
+    merge_sort_multithread((void*)&l_part_args);
+    merge_sort_multithread((void*)&r_part_args);
+    
     merge(arr, l, mid, r);
-	
 	return NULL;
 }
 
-int start_sorting(int *arr, int size)
+size_t start_sorting(int *arr, size_t size)
 {
-	int l = 0;
-	int r = size - 1;	
-	int mid = calculate_mid(l, r);
+	size_t l = 0;
+	size_t r = size - 1;	
+	size_t mid = calculate_mid(l, r);
 	
 	pthread_t l_part_thread, r_part_thread;
 	
 	struct arr_struct l_part_args = make_arr_struct(arr, l, mid);
-	struct arr_struct r_part_args = make_arr_struct(arr, mid, r);
+	struct arr_struct r_part_args = make_arr_struct(arr, mid + 1, r);
 	
 	if (pthread_create(&l_part_thread, NULL, merge_sort_multithread, (void*)(&l_part_args)) != 0) {
         fprintf(stderr, "Could not start left thread!\n");
@@ -136,7 +140,7 @@ int start_sorting(int *arr, int size)
 
 int* sortArray(int *nums, int numsSize, int *returnSize) 
 {
-    start_sorting(nums, 0, numsSize);
+    start_sorting(nums, (int)numsSize);
     *returnSize = numsSize;
     return nums;
 }
