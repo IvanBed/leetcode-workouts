@@ -10,18 +10,19 @@ You must solve the problem without using any built-in functions in O(nlog(n)) ti
 
 /*
         Multithreading solution using POSIX threads
-
+        to DO
+        add shared thread counter and mutex for it
 */
 
 struct arg_struct
 {
     int *arr;
-    int *thread_cnt;
+    int thread_cnt;
     int l;
     int r;
 };
 
-struct arg_struct make_arg_struct(int * arr, int *thread_cnt, int l, int r)
+struct arg_struct make_arg_struct(int * arr, int thread_cnt, int l, int r)
 {
     struct arg_struct res; 
     res.arr = arr;
@@ -31,7 +32,7 @@ struct arg_struct make_arg_struct(int * arr, int *thread_cnt, int l, int r)
     return res;
 }
 
-void unpack_arg_struct(struct arg_struct args, int **arr, int **thread_cnt, int *l, int *r)
+void unpack_arg_struct(struct arg_struct args, int **arr, int *thread_cnt, int *l, int *r)
 {
     *arr = args.arr;
     *thread_cnt = args.thread_cnt;
@@ -92,7 +93,7 @@ void* merge_sort_multithread(void *args)
     
     int l, r;
     int *arr = NULL;
-    int *thread_cnt = NULL;
+    int thread_cnt;
     unpack_arg_struct(*((struct arg_struct*)args), &arr, &thread_cnt, &l, &r);
 
     if (l >= r) 
@@ -101,14 +102,15 @@ void* merge_sort_multithread(void *args)
     }    
     
     int mid = calculate_mid(l, r);
-    struct arg_struct l_part_args = make_arg_struct(arr, thread_cnt, l, mid);
-    struct arg_struct r_part_args = make_arg_struct(arr, thread_cnt, mid + 1, r);
     
-    if ((*thread_cnt) > 0)
+    if (thread_cnt > 0)
     {
         pthread_t l_part_thread, r_part_thread;
-    
-        (*thread_cnt)--;
+        
+         
+        struct arg_struct l_part_args = make_arg_struct(arr, thread_cnt, l, mid);
+        struct arg_struct r_part_args = make_arg_struct(arr, thread_cnt, mid + 1, r);
+        thread_cnt--;
         
         if (pthread_create(&l_part_thread, NULL, merge_sort_multithread, (void*)(&l_part_args)) != 0) 
         {
@@ -128,6 +130,8 @@ void* merge_sort_multithread(void *args)
     } 
     else 
     { 
+        struct arg_struct l_part_args = make_arg_struct(arr, thread_cnt, l, mid);
+        struct arg_struct r_part_args = make_arg_struct(arr, thread_cnt, mid + 1, r);
         merge_sort_multithread((void*)&l_part_args);
         merge_sort_multithread((void*)&r_part_args);
     }
@@ -142,7 +146,8 @@ int start_multithread_sorting(int *arr, int size, int thread_count)
     int l = 0;
     int r = size - 1;    
      
-    struct arg_struct args = make_arg_struct(arr, &thread_count, l, r);
+    
+    struct arg_struct args = make_arg_struct(arr, thread_count, l, r);
     merge_sort_multithread((void*)&args);
     
     return 0;
@@ -150,7 +155,7 @@ int start_multithread_sorting(int *arr, int size, int thread_count)
 
 int* sortArray(int *nums, int numsSize, int *returnSize) 
 {
-    start_multithread_sorting(nums, numsSize, 10);
+    start_multithread_sorting(nums, numsSize, 1);
     *returnSize = numsSize;
     return nums;
 }
