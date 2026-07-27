@@ -37,3 +37,49 @@ public:
         return temp_storage;
     }
 };
+
+/* Another approach to solve the 46 problem*/
+
+class Solution {
+public:
+    
+    void nextPermutation(vector<int>& nums) 
+    {
+        size_t fast = nums.size() - 1;
+        size_t slow = nums.size() - 1;
+
+        while (fast > 0 && slow > 0)
+        {
+            if (nums[slow] > nums[fast - 1])
+            {
+                std::swap(nums[slow], nums[fast - 1]);
+                reverse(nums.begin() + fast, nums.end());
+                return;
+            }
+            if (nums[fast] > nums[fast - 1])
+            {
+                slow--;
+            }
+            else
+            {
+                fast--;
+            }
+        }
+        reverse(nums.begin(), nums.end());
+    }
+
+
+    vector<vector<int>> permute(vector<int>& nums) 
+    {
+        vector<vector<int>> permutations;
+        vector<int> current_perm = nums;
+       
+        do 
+        {
+            nextPermutation(current_perm);
+            permutations.push_back(current_perm);
+        } while (current_perm != nums);
+        
+        return permutations;
+    }
+};
