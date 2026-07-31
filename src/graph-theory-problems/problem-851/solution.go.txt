@@ -1,0 +1,66 @@
+/*
+
+There is a group of n people labeled from 0 to n - 1 where each person has a different amount of money and a different level of quietness.
+
+You are given an array richer where richer[i] = [ai, bi] indicates that ai has more money than bi and an integer array quiet where quiet[i] is the quietness of the ith person. 
+All the given data in richer are logically correct (i.e., the data will not lead you to a situation where x is richer than y and y is richer than x at the same time).
+
+Return an integer array answer where answer[x] = y if y is the least quiet person (that is, the person y with the smallest value of quiet[y]) among all people who definitely have equal to or more money than the person x.
+
+*/
+
+func makeAdjacencyList(n int, richer [][]int) []map[int]bool {
+    adjacencyList := make([]map[int]bool, n)
+    for i := range adjacencyList {
+        adjacencyList[i] = make(map[int]bool)
+    } 
+    for i := range richer {
+        adjacencyList[richer[i][1]][richer[i][0]] = true
+    }
+    return adjacencyList
+}
+
+func findQuietRichInternal(poorer []map[int]bool, quiet []int, answer []int, visited []bool, person int, minQuiet *int) {
+
+    for key, _ := range poorer[person] {
+
+        if quiet[key] < quiet[*minQuiet] {
+            *minQuiet = key
+        } 
+        if !visited[key] {
+            visited[key] = true
+            findQuietRichInternal(poorer, quiet, answer, visited, key, minQuiet)  
+        }      
+    }
+    if answer[person] == len(quiet) + 1  {
+        answer[person] = *minQuiet
+    }
+}
+
+func findQuietRich(poorer []map[int]bool, quiet []int, answer []int, person int) {
+    
+    minQuiet := person
+    visited := make([]bool, len(answer))
+    findQuietRichInternal(poorer, quiet, answer, visited, person, &minQuiet)
+}
+
+func loudAndRich(richer [][]int, quiet []int) []int {
+    
+    answer := make([]int, len(quiet))
+    for i := range answer {
+        answer[i] = len(quiet) + 1
+    }
+
+    poorerGraph := makeAdjacencyList(len(quiet), richer)
+    
+    for i := range answer {
+        if len(poorerGraph[i]) == 0 {
+            answer[i] = i
+        } else {
+            if answer[i] == len(quiet) + 1 {
+                findQuietRich(poorerGraph, quiet, answer, i) 
+            }
+        }
+    }
+    return answer
+}
